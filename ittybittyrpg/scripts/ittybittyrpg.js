@@ -53,14 +53,31 @@ var ibrpg = {
         ds.ctx.drawImage(tileset, 0, 0, 32, 32);
     },
     xx_renderLayer: function(){
-        var tileset = document.getElementById("dungeon");
+        var tileset = document.getElementById("dungeoncrawl");
+        console.log("tileset", tileset)
         var ds = this.datastore;
+        var dgcHeightInTiles = 64;
+        var dgcWidthInTiles = 48;
+        var randomX = Math.floor(Math.random() * dgcWidthInTiles) *32;
+        var randomY = Math.floor(Math.random() * dgcHeightInTiles) *32;
+        console.log("randomx", randomX)
+        console.log("randomY", randomY)
+        this.initCanvas();
         for(var i=0; i<12; i++){
             for(var j=0; j<12; j++){
-                ds.ctx.drawImage(tileset, 0,0, 32,32, i*32, j*32, 32,32);
+                ds.ctx.drawImage(tileset, Math.floor(Math.random() * dgcWidthInTiles) *32 ,Math.floor(Math.random() * dgcHeightInTiles) *32, 32,32, i*32, j*32, 32,32);
             }
         }
         
+    }, 
+    xx_timedUpdate: function(){
+        console.log("timedUpdate")
+        window.setInterval(function(){
+            ibrpg.xx_renderLayer();
+            
+        }, 200);
+        // ibrpg.xx_renderLayer();
+        // window.requestAnimationFrame(ibrpg.xx_timedUpdate)
     }
 }
 
@@ -68,10 +85,15 @@ var ibrpg = {
 window.addEventListener("DOMContentLoaded", function(e){
     console.log("addEventListener:", e);
     ibrpg.init();
+    document.getElementById("dungeoncrawl").addEventListener("load", function(){
+    console.log("crawl loaded")
+    ibrpg.xx_timedUpdate();
+})
 });
 
-window.addEventListener("load", function(e){
+window.addEventListener("click", function(e){
     console.log("addEventListener", e);
     //ibrpg.xx_renderOneTile();
     ibrpg.xx_renderLayer();
-})
+});
+
