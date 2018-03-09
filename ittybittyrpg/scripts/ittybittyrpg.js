@@ -37,13 +37,15 @@ var ibrpg = {
               type: "dungeoncrawl",
               name: "wall",
               xOffset: 0,
-              yOffset: 14
+              yOffset: 14,
+              collision: true
           },
           "f" : {
               type: "dungeoncrawl",
               name: "floor",
               xOffset: 0,
-              yOffset: 15
+              yOffset: 15,
+              collision: false
           }
       },
       character: {
@@ -130,7 +132,18 @@ var ibrpg = {
             }
         }
         
-    }, 
+    },
+    xx_checkCollision: function(oldXoffset,oldYoffset,newXoffset,newYoffset){
+        var isCollision = false;
+        var mapArr = this.world.map.split(",");
+        const tileDef = ibrpg.world.tileDef[mapArr[(newYoffset*Constants.WIDTH) + newXoffset].trim()];
+        
+        
+        console.log("tileDef tile:", tileDef);
+        isCollision = tileDef.collision;
+        
+        return isCollision;
+    },
     xx_timedUpdate: function(){
         //console.log("timedUpdate")
         ibrpg.datastore.interval = window.setInterval(function(){
@@ -173,9 +186,6 @@ var ibrpg = {
         
         for(var i = 0; i < Constants.WIDTH; i++){
             for(var j = 0; j < Constants.HEIGHT; j++){
-               // ds.ctx.drawImage(tileset, Math.floor(Math.random() * dgcWidthInTiles) *32 ,Math.floor(Math.random() * dgcHeightInTiles) *32, 32,32, i*32, j*32, 32,32);
-              //console.log("letter:", mapArr[(i*12) + j].trim());
-            //   console.log("tile: ", tileDef[mapArr[(i*12) + j].trim()]);
               ctx.drawImage(tileset, 
                 tileDef[mapArr[(i*Constants.WIDTH) + j].trim()].xOffset * Constants.SPWIDTH, 
                 tileDef[mapArr[(i*Constants.HEIGHT) + j].trim()].yOffset * Constants.SPHEIGHT,
@@ -211,20 +221,38 @@ window.addEventListener("click", function(e){
 window.addEventListener("keydown", function(e){
     console.log("keydown");
     const keyName = event.key;
+    const keyCode = event.keyCode;
     console.log('keydown event\n\n' + 'key: ' + keyName);
-    
+    console.log('keydown event\n\n' + 'keyCode: ' + keyCode);
+    var charPos = ibrpg.world.character.pos
     
     if(keyName == "ArrowRight"){
-        ibrpg.world.character.pos.x+=1;
+        if(!ibrpg.xx_checkCollision(charPos.x,
+            charPos.y, charPos.x+1, charPos.y)){
+            ibrpg.world.character.pos.x+=1;
+        }
+        
     }
-        if(keyName == "ArrowLeft"){
-        ibrpg.world.character.pos.x-=1;
+    if(keyName == "ArrowLeft"){
+        // ibrpg.world.character.pos.x-=1;
+        if(!ibrpg.xx_checkCollision(charPos.x,
+            charPos.y, charPos.x-1, charPos.y)){
+            ibrpg.world.character.pos.x-=1;
+        }
     }
-        if(keyName == "ArrowUp"){
-        ibrpg.world.character.pos.y-=1;
+    if(keyName == "ArrowUp"){
+        // ibrpg.world.character.pos.y-=1;
+        if(!ibrpg.xx_checkCollision(charPos.x,
+            charPos.y, charPos.x, charPos.y-1)){
+            ibrpg.world.character.pos.y-=1;
+        }
     }
-        if(keyName == "ArrowDown"){
-        ibrpg.world.character.pos.y+=1;
+    if(keyName == "ArrowDown"){
+        // ibrpg.world.character.pos.y+=1;
+        if(!ibrpg.xx_checkCollision(charPos.x,
+            charPos.y, charPos.x, charPos.y+1)){
+            ibrpg.world.character.pos.y+=1;
+        }
     }
     
     ibrpg.xx_renderLevel();
