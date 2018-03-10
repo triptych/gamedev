@@ -48,6 +48,19 @@ var ibrpg = {
               collision: false
           }
       },
+      monsters: {
+        "monster_1" : {
+            type: "dungeoncrawl",
+            name: "monster",
+            xOffset: 0,
+            yOffset: 5,
+            hp: 10,
+            pos: {
+                x: 5,
+                y: 5
+            }
+        }  
+      },
       character: {
         xOffset: 1,
         yOffset: 2,
@@ -151,12 +164,46 @@ var ibrpg = {
             ibrpg.datastore.delay = ibrpg.datastore.delay + 1;
             if(ibrpg.datastore.delay >= ibrpg.state.delay){
                 window.clearInterval(ibrpg.datastore.interval);
-                ibrpg.xx_renderLevel();
+                ibrpg.renderWorld();
             }
             
         }, 200);
         // ibrpg.xx_renderLayer();
         // window.requestAnimationFrame(ibrpg.xx_timedUpdate)
+    },
+    xx_renderMons: function(){
+        var ds = this.datastore;
+        var ctx = ds.ctx;
+        var monsters = this.world.monsters;
+        
+        for (const monster in monsters) {
+            if(monsters.hasOwnProperty(monster)){
+                console.log(monster);
+                console.log(monsters[monster])
+                this.renderActor(monsters[monster]);
+            }
+        }
+    },
+    renderWorld: function(){
+        ibrpg.xx_renderLevel();
+        ibrpg.xx_renderMons();
+        ibrpg.xx_renderChar();
+    },
+    renderActor: function(actorObj){
+        console.log("renderActor, actorObj:", actorObj);
+        var ds = this.datastore;
+        var ctx = ds.ctx;
+        var tileset = document.getElementById(actorObj.type);
+        ctx.drawImage(tileset, 
+            actorObj.xOffset * Constants.SPWIDTH,
+            actorObj.yOffset * Constants.SPHEIGHT,
+            Constants.SPWIDTH,
+            Constants.SPHEIGHT,
+            actorObj.pos.x * Constants.SPWIDTH,
+            actorObj.pos.y * Constants.SPWIDTH,
+            Constants.SPWIDTH,
+            Constants.SPHEIGHT);
+        
     },
     xx_renderChar: function(){
         var ds = this.datastore;
@@ -207,16 +254,16 @@ window.addEventListener("DOMContentLoaded", function(e){
     console.log("addEventListener:", e);
     ibrpg.init();
     document.getElementById("dungeoncrawl").addEventListener("load", function(){
-    console.log("crawl loaded")
-    ibrpg.xx_timedUpdate();
-})
+        console.log("crawl loaded")
+        ibrpg.xx_timedUpdate();
+    });
 });
 
-window.addEventListener("click", function(e){
-    console.log("addEventListener", e);
-    //ibrpg.xx_renderOneTile();
-    ibrpg.xx_renderLayer();
-});
+// window.addEventListener("click", function(e){
+//     console.log("addEventListener", e);
+//     //ibrpg.xx_renderOneTile();
+//     ibrpg.xx_renderLayer();
+// });
 
 window.addEventListener("keydown", function(e){
     console.log("keydown");
@@ -255,8 +302,8 @@ window.addEventListener("keydown", function(e){
         }
     }
     
-    ibrpg.xx_renderLevel();
-    ibrpg.xx_renderChar();
+    ibrpg.renderWorld();
     
+    e.preventDefault();
 });
 
