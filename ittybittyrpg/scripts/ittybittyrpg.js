@@ -4,7 +4,12 @@ const Constants = {
     WIDTH: 12,
     HEIGHT: 12,
     SPHEIGHT: 32,
-    SPWIDTH: 32
+    SPWIDTH: 32,
+    RIGHT: 'right',
+    LEFT: 'left',
+    UP: 'up',
+    DOWN: 'down',
+    RANDOM: 'random'
     
 }
 var ibrpg = {
@@ -179,7 +184,8 @@ var ibrpg = {
         for (const monster in monsters) {
             if(monsters.hasOwnProperty(monster)){
                 console.log(monster);
-                console.log(monsters[monster])
+                console.log(monsters[monster]);
+                this.moveActor(monsters[monster], Constants.RANDOM);
                 this.renderActor(monsters[monster]);
             }
         }
@@ -204,6 +210,47 @@ var ibrpg = {
             Constants.SPWIDTH,
             Constants.SPHEIGHT);
         
+    },
+    moveActor: function(actorObj, dir){
+        console.log("moveActor, actorObj:", actorObj);
+        console.log("moveActor, dir:", dir);
+        
+        var dirArr = [Constants.RIGHT, Constants.LEFT, Constants.UP, Constants.DOWN]; 
+        if(dir == Constants.RANDOM){
+          dir = dirArr[Math.floor(Math.random()*dirArr.length)];  
+        }
+        
+        
+        var actorPos = actorObj.pos;
+        switch(dir){
+            case Constants.RIGHT:
+                // code
+                if(!ibrpg.xx_checkCollision(actorPos.x,
+                    actorPos.y, actorPos.x+1, actorPos.y)){
+                    actorPos.x+=1;
+                }
+                break;
+           case Constants.LEFT:
+               if(!ibrpg.xx_checkCollision(actorPos.x,
+                    actorPos.y, actorPos.x-1, actorPos.y)){
+                    actorPos.x-=1;
+                }
+                break;
+            case Constants.UP:
+               if(!ibrpg.xx_checkCollision(actorPos.x,
+                    actorPos.y-1, actorPos.x, actorPos.y)){
+                    actorPos.y-=1;
+                }
+                break;
+            case Constants.DOWN:
+               if(!ibrpg.xx_checkCollision(actorPos.x,
+                    actorPos.y, actorPos.x, actorPos.y+1)){
+                    actorPos.y+=1;
+                }
+                break;    
+        }
+        
+
     },
     xx_renderChar: function(){
         var ds = this.datastore;
@@ -271,35 +318,41 @@ window.addEventListener("keydown", function(e){
     const keyCode = event.keyCode;
     console.log('keydown event\n\n' + 'key: ' + keyName);
     console.log('keydown event\n\n' + 'keyCode: ' + keyCode);
-    var charPos = ibrpg.world.character.pos
+    var char = ibrpg.world.character;
+    var charPos = ibrpg.world.character.pos; 
     
     if(keyName == "ArrowRight"){
-        if(!ibrpg.xx_checkCollision(charPos.x,
-            charPos.y, charPos.x+1, charPos.y)){
-            ibrpg.world.character.pos.x+=1;
-        }
+        // if(!ibrpg.xx_checkCollision(charPos.x,
+        //     charPos.y, charPos.x+1, charPos.y)){
+        //     ibrpg.world.character.pos.x+=1;
+        // }
+        ibrpg.moveActor(char, Constants.RIGHT);
         
     }
     if(keyName == "ArrowLeft"){
         // ibrpg.world.character.pos.x-=1;
-        if(!ibrpg.xx_checkCollision(charPos.x,
-            charPos.y, charPos.x-1, charPos.y)){
-            ibrpg.world.character.pos.x-=1;
-        }
+        // if(!ibrpg.xx_checkCollision(charPos.x,
+        //     charPos.y, charPos.x-1, charPos.y)){
+        //     ibrpg.world.character.pos.x-=1;
+        // }
+        ibrpg.moveActor(char, Constants.LEFT);
     }
     if(keyName == "ArrowUp"){
         // ibrpg.world.character.pos.y-=1;
-        if(!ibrpg.xx_checkCollision(charPos.x,
-            charPos.y, charPos.x, charPos.y-1)){
-            ibrpg.world.character.pos.y-=1;
-        }
+        // if(!ibrpg.xx_checkCollision(charPos.x,
+        //     charPos.y, charPos.x, charPos.y-1)){
+        //     ibrpg.world.character.pos.y-=1;
+        // }
+        ibrpg.moveActor(char, Constants.UP);
     }
     if(keyName == "ArrowDown"){
         // ibrpg.world.character.pos.y+=1;
-        if(!ibrpg.xx_checkCollision(charPos.x,
-            charPos.y, charPos.x, charPos.y+1)){
-            ibrpg.world.character.pos.y+=1;
-        }
+        // if(!ibrpg.xx_checkCollision(charPos.x,
+        //     charPos.y, charPos.x, charPos.y+1)){
+        //     ibrpg.world.character.pos.y+=1;
+        // }
+        ibrpg.moveActor(char, Constants.DOWN);
+        
     }
     
     ibrpg.renderWorld();
