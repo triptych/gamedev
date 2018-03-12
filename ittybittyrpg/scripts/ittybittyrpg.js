@@ -66,6 +66,19 @@ var ibrpg = {
             }
         }  
       },
+      events: {
+          "popupText": {
+              name: "event",
+              pos: {
+                  x: 10,
+                  y: 8
+              },
+              action: {
+                  call: "dialog",
+                  param: "Welcome to Itty Bitty RPG!"
+              }
+          }
+      },
       character: {
         xOffset: 1,
         yOffset: 2,
@@ -194,6 +207,24 @@ var ibrpg = {
         ibrpg.xx_renderLevel();
         ibrpg.xx_renderMons();
         ibrpg.xx_renderChar();
+        ibrpg.xx_checkEvent();
+        
+    },
+    xx_checkEvent: function(){
+        console.log("In xx_checkEvent");
+        var charPos = this.world.character.pos;
+        var events = this.world.events;
+        for(var evt in events){
+            console.log("--- event check ",events[evt].pos);
+            console.log("--- event check ", charPos);
+            if(events[evt].pos.x == charPos.x && events[evt].pos.y == charPos.y){
+                console.log(events[evt].name);
+                switch(events[evt].action.call){
+                    case 'dialog': 
+                        this.xx_renderText(events[evt].action.param);
+                }
+            }
+        }
     },
     renderActor: function(actorObj){
         console.log("renderActor, actorObj:", actorObj);
@@ -238,7 +269,7 @@ var ibrpg = {
                 break;
             case Constants.UP:
                if(!ibrpg.xx_checkCollision(actorPos.x,
-                    actorPos.y-1, actorPos.x, actorPos.y)){
+                    actorPos.y, actorPos.x, actorPos.y-1)){
                     actorPos.y-=1;
                 }
                 break;
@@ -267,6 +298,19 @@ var ibrpg = {
             char.pos.y * Constants.SPWIDTH,
             Constants.SPWIDTH,
             Constants.SPHEIGHT);
+        
+    },
+    xx_renderText: function(txt){
+        console.log("renderText:", txt);
+        var ds = this.datastore;
+        var ctx = ds.ctx;
+        
+        ctx.fillStyle = "#292929";
+        // ctx.font = "2em 'Open Sans' sans-serif"
+        ctx.font = '1em sans-serif';
+        ctx.fillRect(0,6 * Constants.SPHEIGHT,Constants.WIDTH * Constants.SPWIDTH, Constants.HEIGHT * Constants.SPHEIGHT);
+        ctx.fillStyle = "#FFFFFF";
+        ctx.fillText(txt, 1 * Constants.SPWIDTH, 7 * Constants.SPHEIGHT)
         
     },
     xx_renderLevel: function(){
@@ -321,6 +365,8 @@ window.addEventListener("keydown", function(e){
     var char = ibrpg.world.character;
     var charPos = ibrpg.world.character.pos; 
     
+
+    
     if(keyName == "ArrowRight"){
         // if(!ibrpg.xx_checkCollision(charPos.x,
         //     charPos.y, charPos.x+1, charPos.y)){
@@ -356,6 +402,10 @@ window.addEventListener("keydown", function(e){
     }
     
     ibrpg.renderWorld();
+   
+    if(keyName == 't'){
+        ibrpg.xx_renderText("Welcome to Itty Bitty RPG");
+    }
     
     e.preventDefault();
 });
