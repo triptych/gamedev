@@ -33,10 +33,10 @@ var ibrpg = {
     },
     world: {
       title: "testlevel",
-      width: Constants.WIDTH,
-      height: Constants.HEIGHT,
-      spriteHeight: Constants.SPHEIGHT,
-      spriteWidth: Constants.SPWIDTH,
+    //   width: Constants.WIDTH,
+    //   height: Constants.HEIGHT,
+    //   spriteHeight: Constants.SPHEIGHT,
+    //   spriteWidth: Constants.SPWIDTH,
       tileDef: {
           "w" : {
               type: "dungeoncrawl",
@@ -76,6 +76,17 @@ var ibrpg = {
               action: {
                   call: "dialog",
                   param: "Welcome to Itty Bitty RPG!"
+              }
+          },
+          'loadNewLevel': {
+              name: 'event',
+              pos: {
+                  x:10,
+                  y:10
+              },
+              action: {
+                  call: "loadLevel",
+                  param: ''
               }
           }
       },
@@ -222,6 +233,10 @@ var ibrpg = {
                 switch(events[evt].action.call){
                     case 'dialog': 
                         this.xx_renderText(events[evt].action.param);
+                        break;
+                    case 'loadLevel': 
+                        this.xx_loadLevel();
+                        break;
                 }
             }
         }
@@ -312,6 +327,17 @@ var ibrpg = {
         ctx.fillStyle = "#FFFFFF";
         ctx.fillText(txt, 1 * Constants.SPWIDTH, 7 * Constants.SPHEIGHT)
         
+    },
+    xx_loadLevel: function(){
+      var script = document.createElement("script");
+      script.onload = function(){
+          console.log("--- Level Loaded ---");
+          ibrpg.world = levels[levels.length-1];
+          ibrpg.renderWorld();
+      }
+      script.src='scripts/level.js';
+      document.getElementsByTagName('head')[0].appendChild(script);
+      
     },
     xx_renderLevel: function(){
         // assuming level is loaded
@@ -405,6 +431,10 @@ window.addEventListener("keydown", function(e){
    
     if(keyName == 't'){
         ibrpg.xx_renderText("Welcome to Itty Bitty RPG");
+    }
+    
+    if(keyName == 'l'){
+        ibrpg.xx_loadLevel();
     }
     
     e.preventDefault();
